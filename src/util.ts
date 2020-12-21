@@ -1,4 +1,5 @@
 import { dirname, resolve } from 'path';
+import fs from 'fs';
 
 /*
 "baseUrl": ".",
@@ -34,6 +35,11 @@ export const mapPaths = (
   return dest;
 };
 
+function readJson (filepath:string):any {
+  const strContent = fs.readFileSync(filepath);
+  return JSON.parse(strContent);
+}
+
 export const loadConfig = (file: string): ITSConfig => {
   const {
     extends: ext,
@@ -42,7 +48,7 @@ export const loadConfig = (file: string): ITSConfig => {
       outDir: undefined,
       paths: undefined,
     },
-  } = require(file) as IRawTSConfig;
+  } = readJson(file) as IRawTSConfig;
 
   const config: ITSConfig = {};
   if (baseUrl) {
@@ -56,7 +62,7 @@ export const loadConfig = (file: string): ITSConfig => {
   }
 
   if (ext) {
-    const parentConfig = loadConfig(resolve(dirname(file), ext));
+    const parentConfig = readJson(resolve(dirname(file), ext));
     return {
       ...parentConfig,
       ...config,
